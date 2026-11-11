@@ -1,5 +1,5 @@
 name: RAVEn to MQTT
-version: "0.1.0"
+version: "0.1.1"
 slug: raven2mqtt
 description: Bridge a Rainforest RAVEn / EMU-2 serial device to MQTT with Home Assistant discovery
 url: https://github.com/lestephen/raven2mqtt-addon

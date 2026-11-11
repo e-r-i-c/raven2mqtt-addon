@@ -39,8 +39,16 @@ fi
 [ "${MQTT_USERNAME}" = "null" ] && MQTT_USERNAME=""
 [ "${MQTT_PASSWORD}" = "null" ] && MQTT_PASSWORD=""
 
-if ! bashio::fs.device_exists "${SERIAL_DEVICE}"; then
+# Check for the serial device directly rather than with
+# bashio::fs.device_exists: bashio before v0.18.0 (including the version in the
+# alpine3.20 base image) only accepts block devices, and a RAVEn's
+# /dev/ttyACM* node is a character device, so that check always failed.
+# [ -c ] follows symlinks, so /dev/serial/by-id/... paths work too.
+if [ ! -e "${SERIAL_DEVICE}" ]; then
     bashio::exit.nok "Serial device ${SERIAL_DEVICE} not found. Plug in the RAVEn and set serial_device to the correct path."
+fi
+if [ ! -c "${SERIAL_DEVICE}" ]; then
+    bashio::exit.nok "${SERIAL_DEVICE} exists but is not a serial (character) device. Set serial_device to the RAVEn's /dev/ttyACM* or /dev/serial/by-id/... path."
 fi
 
 # Render the raven2mqtt TOML config. Every user-supplied string is run through
